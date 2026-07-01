@@ -1,0 +1,337 @@
+import csv
+import urllib.request
+import json
+from datetime import datetime
+
+# URL do Google Sheets publicado como CSV
+CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTc9EptKql6OuNB1bygYLm9CMhufVgOLCmu9zbzrE8lJQr5_sIfw2UoJrZMDxZzv7vqj58tJM-E7UHO/pub?output=csv"
+
+def fetch_data():
+    req = urllib.request.Request(CSV_URL, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req) as r:
+        text = r.read().decode('utf-8')
+    lines = text.strip().split('\n')
+    if not lines:
+        return []
+    headers = [h.strip().strip('"') for h in lines[0].split(',')]
+    rows = []
+    for line in lines[1:]:
+        vals = []
+        cur = ''
+        inq = False
+        for c in line:
+            if c == '"':
+                inq = not inq
+            elif c == ',' and not inq:
+                vals.append(cur.strip().strip('"'))
+                cur = ''
+            else:
+                cur += c
+        vals.append(cur.strip().strip('"'))
+        obj = {headers[i]: vals[i] if i < len(vals) else '' for i in range(len(headers))}
+        rows.append(obj)
+    return rows
+
+def gerar_html(rows):
+    rows_json = json.dumps(rows, ensure_ascii=False)
+    agora = datetime.now().strftime('%d/%m/%Y %H:%M')
+    
+    html = f'''<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendário de Demandas — Assistentes de Compras</title>
+<style>
+*{{box-sizing:border-box;margin:0;padding:0}}
+:root{{--red:#E8001C;--red-dark:#B5001A;--blue:#0057B8;--blue-dark:#003D82;--gray:#F5F5F5;--gray2:#E0E0E0;--text:#1A1A1A;--text2:#555;--green:#1B8A3E;--orange:#E65C00;}}
+body{{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;padding:16px}}
+.app{{max-width:980px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.12)}}
+.g-header{{background:var(--red);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}}
+.g-logo{{display:flex;align-items:center;gap:10px}}
+.g-heart{{width:38px;height:38px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}}
+.g-heart svg{{width:20px;height:20px;fill:var(--red)}}
+.g-title{{color:#fff;font-size:17px;font-weight:700}}
+.g-sub{{color:rgba(255,255,255,.85);font-size:12px;margin-top:2px}}
+.g-today{{color:rgba(255,255,255,.9);font-size:12px;text-align:right}}
+.update-info{{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px}}
+.month-strip{{background:var(--red-dark);padding:8px 12px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:3px solid var(--blue)}}
+.mtab{{padding:6px 13px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:rgba(255,255,255,.2);color:#fff;transition:all .15s}}
+.mtab:hover{{background:rgba(255,255,255,.35)}}
+.mtab.active{{background:var(--blue);color:#fff}}
+.view-tabs{{display:flex;gap:6px;padding:10px 14px;background:#f8f8f8;border-bottom:1px solid var(--gray2);align-items:center;justify-content:space-between;flex-wrap:wrap}}
+.vtabs{{display:flex;gap:6px}}
+.vtab{{padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray2);background:#fff;color:var(--text2);transition:all .15s}}
+.vtab.active{{background:var(--red);color:#fff;border-color:var(--red)}}
+.sheets-link{{font-size:12px;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:8px;border:1px solid var(--blue);background:#EAF4FF}}
+.sheets-link:hover{{background:#D0E8FF}}
+.alerts-wrap{{padding:12px 14px 0}}
+.alert-box{{border-radius:10px;padding:12px 14px;border-left:4px solid;margin-bottom:2px}}
+.a-danger{{background:#FFF0F2;border-color:var(--red)}}
+.a-ok{{background:#EAF4FF;border-color:var(--blue)}}
+.alert-box h3{{font-size:14px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:7px}}
+.a-danger h3{{color:var(--red-dark)}}
+.a-ok h3{{color:var(--blue-dark)}}
+.al-item{{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.06)}}
+.al-item:last-child{{border-bottom:none}}
+.atag{{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:700;white-space:nowrap;flex-shrink:0}}
+.t-hoje{{background:var(--red);color:#fff}}
+.t-amanha{{background:var(--orange);color:#fff}}
+.t-breve{{background:var(--blue);color:#fff}}
+.al-text{{font-size:13px;color:var(--text);line-height:1.4}}
+.al-resp{{font-size:11px;color:var(--text2);margin-top:2px}}
+.cal-wrap{{padding:12px 14px 0}}
+.cal-grid{{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;background:var(--gray2);border:2px solid var(--gray2);border-radius:10px;overflow:hidden}}
+.dow{{background:var(--red);padding:9px 3px;text-align:center;font-size:12px;font-weight:700;color:#fff;letter-spacing:.4px}}
+.dow.fim{{background:var(--red-dark)}}
+.day{{background:#fff;min-height:95px;padding:6px;cursor:pointer;transition:background .1s}}
+.day:hover{{background:#FFF5F6}}
+.day.empty{{background:var(--gray);min-height:95px;cursor:default}}
+.day.today{{outline:3px solid var(--blue);outline-offset:-2px}}
+.day.weekend{{background:#FFF8F8}}
+.day-num{{font-size:16px;font-weight:700;color:var(--text2);margin-bottom:3px;line-height:1}}
+.day.today .day-num{{color:var(--blue);font-size:17px}}
+.day.weekend .day-num{{color:var(--red)}}
+.ev{{font-size:10px;padding:3px 5px;border-radius:4px;margin-bottom:2px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;color:#fff}}
+.ev.done{{opacity:.45;text-decoration:line-through}}
+.ev-alerta{{background:#FFF9C4;color:#5D4037;font-size:10px;border:1px solid #F9A825}}
+.done-badge{{font-size:9px;background:var(--green);color:#fff;border-radius:3px;padding:1px 4px;margin-left:3px}}
+.legend{{display:flex;gap:7px;flex-wrap:wrap;padding:10px 14px;background:var(--gray);border-top:2px solid var(--gray2);margin-top:12px}}
+.leg-item{{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)}}
+.leg-dot{{width:11px;height:11px;border-radius:3px;flex-shrink:0}}
+.mov{{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px}}
+.mbox{{background:#fff;border-radius:12px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto}}
+.mhead{{padding:14px 16px;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center;background:var(--red)}}
+.mhead h3{{color:#fff;font-size:15px;font-weight:700}}
+.mclose{{cursor:pointer;font-size:24px;color:rgba(255,255,255,.8);border:none;background:none;padding:0;line-height:1}}
+.mbody{{padding:14px}}
+.mev{{padding:11px 13px;border-radius:8px;margin-bottom:10px;border-left:4px solid}}
+.mev h4{{font-size:14px;font-weight:700;margin-bottom:6px}}
+.resp-label{{font-size:11px;color:var(--text2);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}}
+.rbadge{{font-size:12px;padding:3px 9px;border-radius:20px;font-weight:600;display:inline-block;margin:2px}}
+.anote{{font-size:11px;margin-top:7px;color:var(--text2)}}
+.file-link{{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:6px 10px;background:#EAF4FF;border-radius:6px;color:var(--blue);text-decoration:none;margin-top:6px;font-weight:600;border:1px solid #B3D4F5}}
+.file-link:hover{{background:#D0E8FF}}
+.btn-check{{width:100%;margin-top:10px;padding:9px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .15s}}
+.btn-check.undone{{background:#E8F5E9;color:var(--green);border:1.5px solid var(--green)}}
+.btn-check.done{{background:var(--green);color:#fff;border:1.5px solid var(--green)}}
+.prep-box{{margin-top:4px;padding:8px 10px;background:#FFF9C4;border-radius:8px;border-left:4px solid #F9A825}}
+.prep-box-title{{font-size:12px;font-weight:700;color:#5D4037;margin-bottom:6px}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="g-header">
+  <div class="g-logo">
+    <div class="g-heart"><svg viewBox="0 0 24 24"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg></div>
+    <div><div class="g-title">Calendário de Demandas</div><div class="g-sub">Assistentes de Compras — Drogaria Globo 2026</div></div>
+  </div>
+  <div style="text-align:right">
+    <div class="g-today" id="today-label"></div>
+    <div class="update-info">🔄 Atualizado em: {agora}</div>
+  </div>
+</div>
+<div class="month-strip" id="month-strip"></div>
+<div class="view-tabs">
+  <div class="vtabs">
+    <button class="vtab active" onclick="switchView('Atividades',this)">Atividades</button>
+    <button class="vtab" onclick="switchView('Ressuprimento',this)">Ressuprimento</button>
+  </div>
+  <a class="sheets-link" href="https://docs.google.com/spreadsheets/d/1Nv_eYY6pT3PoGRyTABqznqJ48HXiSpaywAGNkXGX1jM/edit" target="_blank">📊 Editar planilha</a>
+</div>
+<div class="alerts-wrap" id="alerts-wrap"></div>
+<div class="cal-wrap">
+  <div class="cal-grid">
+    <div class="dow">Dom</div><div class="dow">Seg</div><div class="dow">Ter</div>
+    <div class="dow">Qua</div><div class="dow">Qui</div><div class="dow">Sex</div>
+    <div class="dow fim">Sáb</div>
+    <div id="cal-days" style="display:contents"></div>
+  </div>
+</div>
+<div class="legend" id="legend"></div>
+</div>
+
+<div id="modal-ev" style="display:none">
+  <div class="mov" onclick="if(event.target.id==='mov-ev')closeM()" id="mov-ev">
+    <div class="mbox">
+      <div class="mhead"><h3 id="mtitle">—</h3><button class="mclose" onclick="closeM()">×</button></div>
+      <div class="mbody" id="mbody"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const TODAY=new Date();
+const MF=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const ACTIVE=[5,6,7,8,9,10,11];
+let curMonth=Math.max(5,Math.min(TODAY.getMonth(),11));
+let curYear=2026;
+let curView='Atividades';
+let checks={{}};
+
+const ALL_ROWS={rows_json};
+
+const EV_COLORS={{'Agenda Semanal':'#4B0082','Pit Stop':'#0057B8','Cluster':'#0097A7','Condição VAN':'#E65C00','Encarte':'#E8001C','Campanha/PMK':'#6A1B9A','Notas/Auditoria':'#1565C0','Ressarcimento':'#2E7D32','Ofertas':'#E65000','Conta Corrente':'#37474F','Cobranças PBM/OL':'#00838F','Aceite PBM':'#AD1457'}};
+const EV_BG={{'Agenda Semanal':'#F3E8FF','Pit Stop':'#E6F1FB','Cluster':'#E0F7FA','Condição VAN':'#FFF3E0','Encarte':'#FFE5E8','Campanha/PMK':'#F3E5F5','Notas/Auditoria':'#E3F2FD','Ressarcimento':'#E8F5E9','Ofertas':'#FFF8E1','Conta Corrente':'#ECEFF1','Cobranças PBM/OL':'#E0F7FA','Aceite PBM':'#FCE4EC'}};
+
+function getColor(t){{return EV_COLORS[t]||'#5D4037';}}
+function getBg(t){{return EV_BG[t]||'#EFEBE9';}}
+function lastDay(y,m){{return new Date(y,m+1,0).getDate();}}
+
+function getEvents(y,m){{
+  const evs={{}};
+  ALL_ROWS.forEach(row=>{{
+    if(row.Aba!==curView)return;
+    const dt=new Date(row.Data+'T12:00:00');
+    if(isNaN(dt)||dt.getFullYear()!==y||dt.getMonth()!==m)return;
+    const day=dt.getDate();
+    if(!evs[day])evs[day]=[];
+    evs[day].push(row);
+  }});
+  return evs;
+}}
+
+function getPrep(evs,day){{
+  const al=[];
+  const d=new Date(curYear,curMonth,day);
+  if(d.getDay()===0||d.getDay()===6)return al;
+  Object.entries(evs).forEach(([ds,items])=>{{
+    const t=parseInt(ds);
+    items.forEach(ev=>{{
+      const ald=parseInt(ev.Alerta||2);
+      if(ald>0&&day>=t-ald&&day<t)al.push(ev);
+    }});
+  }});
+  return al;
+}}
+
+function ckKey(row,day,m,y){{return `${{row.Demanda}}|${{day}}|${{m}}|${{y}}`;}}
+function isDone(k){{return !!checks[k];}}
+function toggleCheck(k){{
+  checks[k]=!checks[k];
+  try{{localStorage.setItem('gc',JSON.stringify(checks));}}catch(e){{}}
+  renderCal();
+  const parts=k.split('|');
+  const day=parseInt(parts[1]),m=parseInt(parts[2]),y=parseInt(parts[3]);
+  const evs=getEvents(y,m);
+  openModal(day,evs[day]||[],getPrep(evs,day),y,m);
+}}
+function loadChecks(){{try{{const s=localStorage.getItem('gc');if(s)checks=JSON.parse(s);}}catch(e){{}}}}
+
+function renderMonthStrip(){{
+  let h='';ACTIVE.forEach(m=>{{h+=`<button class="mtab${{m===curMonth?' active':''}}" onclick="selMonth(${{m}})">${{MS[m]}}</button>`;}}); 
+  document.getElementById('month-strip').innerHTML=h;
+}}
+
+function renderAlerts(){{
+  const td=TODAY.getDate(),tm=TODAY.getMonth(),ty=TODAY.getFullYear();
+  const isCur=(curMonth===tm&&curYear===ty);
+  if(!isCur){{document.getElementById('alerts-wrap').innerHTML='';return;}}
+  const evs=getEvents(curYear,curMonth);const al=[];
+  Object.entries(evs).forEach(([ds,items])=>{{
+    const day=parseInt(ds);
+    items.forEach(ev=>{{
+      const diff=day-td;const ald=parseInt(ev.Alerta||2);
+      if(diff>=0&&diff<=ald){{const k=ckKey(ev,day,curMonth,curYear);if(!isDone(k))al.push({{...ev,diff,day}});}}
+    }});
+  }});
+  al.sort((a,b)=>a.diff-b.diff);
+  let h='';
+  if(al.length>0){{
+    h=`<div class="alert-box a-danger"><h3>🔔 Atenção — ${{td}} de ${{MF[tm]}}</h3>`;
+    al.forEach(a=>{{
+      let cls,lbl;if(a.diff===0){{cls='t-hoje';lbl='HOJE';}}else if(a.diff===1){{cls='t-amanha';lbl='AMANHÃ';}}else{{cls='t-breve';lbl=`EM ${{a.diff}} DIAS`;}}
+      h+=`<div class="al-item"><span class="atag ${{cls}}">${{lbl}}</span><div><span class="al-text"><strong>${{a.Demanda}}</strong></span><div class="al-resp">${{a.Responsavel}}</div></div></div>`;
+    }});
+    h+='</div>';
+  }} else {{h=`<div class="alert-box a-ok"><h3>✅ Todas as demandas em dia!</h3></div>`;}}
+  document.getElementById('alerts-wrap').innerHTML=h;
+}}
+
+function renderLegend(){{
+  const tipos=curView==='Atividades'
+    ?['Agenda Semanal','Pit Stop','Cluster','Encarte','Condição VAN','Campanha/PMK','Notas/Auditoria','Ressarcimento','Ofertas','Conta Corrente']
+    :['Cobranças PBM/OL','Aceite PBM'];
+  document.getElementById('legend').innerHTML=
+    tipos.map(t=>`<div class="leg-item"><div class="leg-dot" style="background:${{getColor(t)}}"></div>${{t}}</div>`).join('')+
+    `<div class="leg-item"><div class="leg-dot" style="background:#FFF9C4;border:1px solid #F9A825"></div>Preparar</div>`;
+}}
+
+function renderCal(){{
+  renderMonthStrip();renderAlerts();renderLegend();
+  const evs=getEvents(curYear,curMonth);
+  const first=new Date(curYear,curMonth,1).getDay();const total=lastDay(curYear,curMonth);
+  let h='';
+  for(let i=0;i<first;i++)h+=`<div class="day empty"></div>`;
+  for(let day=1;day<=total;day++){{
+    const dow=(first+day-1)%7;const wknd=dow===0||dow===6;
+    const isToday=(day===TODAY.getDate()&&curMonth===TODAY.getMonth()&&curYear===TODAY.getFullYear());
+    const dayEvs=evs[day]||[];
+    const prep=(!wknd&&dayEvs.length===0)?getPrep(evs,day):[];
+    let cls='day';if(wknd)cls+=' weekend';if(isToday)cls+=' today';
+    h+=`<div class="${{cls}}" onclick="openModal(${{day}},null,null,${{curYear}},${{curMonth}})">`;
+    h+=`<div class="day-num">${{day}}</div>`;
+    dayEvs.forEach(ev=>{{
+      const k=ckKey(ev,day,curMonth,curYear);const dk=isDone(k);
+      const c=getColor(ev.Tipo);
+      h+=`<div class="ev${{dk?' done':''}}" style="background:${{c}}">${{dk?'✔ ':''}}${{ev.Demanda}}</div>`;
+    }});
+    if(prep.length>0)prep.slice(0,2).forEach(ev=>{{h+=`<div class="ev ev-alerta">⚑ ${{ev.Demanda}} · ${{ev.Responsavel}}</div>`;}});
+    h+=`</div>`;
+  }}
+  document.getElementById('cal-days').innerHTML=h;
+}}
+
+function openModal(day,dayEvs,prep,y,m){{
+  const useY=y||curYear,useM=m!==undefined?m:curMonth;
+  const evs=getEvents(useY,useM);
+  dayEvs=dayEvs||evs[day]||[];prep=prep||getPrep(evs,day);
+  document.getElementById('mtitle').textContent=`${{day}} de ${{MF[useM]}} ${{useY}}`;
+  let h='';
+  dayEvs.forEach(ev=>{{
+    const c=getColor(ev.Tipo);const b=getBg(ev.Tipo);
+    const k=ckKey(ev,day,useM,useY);const dk=isDone(k);
+    h+=`<div class="mev" style="background:${{dk?'#E8F5E9':b}};border-left-color:${{dk?'#1B8A3E':c}}">
+      <h4>${{ev.Demanda}}${{dk?'<span class="done-badge">✔ Concluído</span>':''}}</h4>
+      <div class="resp-label">Responsável</div>
+      <span class="rbadge" style="background:${{b}};color:${{c}};border:1.5px solid ${{c}}">${{ev.Responsavel}}</span>
+      ${{ev.Observacao?'<div class="anote">📎 '+ev.Observacao+'</div>':''}}
+      ${{ev.Anexo?'<a class="file-link" href="'+ev.Anexo+'" target="_blank">📎 Ver anexo</a>':''}}
+      ${{parseInt(ev.Alerta||0)>0?'<div class="anote">🔔 Alerta '+ev.Alerta+' dia(s) antes</div>':''}}
+      <button class="btn-check ${{dk?'done':'undone'}}" onclick="toggleCheck('${{k}}')">${{dk?'↩ Desmarcar':'✔ Marcar como concluído'}}</button>
+    </div>`;
+  }});
+  if(prep.length>0){{
+    h+=`<div class="prep-box"><div class="prep-box-title">⚑ Preparar para os próximos dias</div>`;
+    prep.forEach(ev=>{{
+      const c=getColor(ev.Tipo);const b=getBg(ev.Tipo);
+      h+=`<div style="margin-bottom:8px"><div style="font-size:13px;font-weight:600;color:#5D4037;margin-bottom:4px">${{ev.Demanda}}</div><span class="rbadge" style="background:${{b}};color:${{c}};border:1px solid ${{c}}">${{ev.Responsavel}}</span></div>`;
+    }});
+    h+=`</div>`;
+  }}
+  if(!dayEvs.length&&!prep.length)h=`<div style="text-align:center;padding:24px;color:var(--text2);font-size:14px">Nenhuma demanda neste dia.<br><br><small>Para adicionar, edite a planilha e aguarde a atualização automática.</small></div>`;
+  document.getElementById('mbody').innerHTML=h;
+  document.getElementById('modal-ev').style.display='block';
+}}
+
+function closeM(){{document.getElementById('modal-ev').style.display='none';}}
+function selMonth(m){{curMonth=m;renderCal();}}
+function switchView(v,el){{curView=v;document.querySelectorAll('.vtab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderCal();}}
+
+const DN=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+document.getElementById('today-label').innerHTML=`${{DN[TODAY.getDay()]}}, ${{TODAY.getDate()}} de ${{MF[TODAY.getMonth()]}}`;
+loadChecks();renderCal();
+</script>
+</body>
+</html>'''
+    return html
+
+if __name__ == '__main__':
+    print("Buscando dados do Google Sheets...")
+    rows = fetch_data()
+    print(f"Total de demandas: {len(rows)}")
+    html = gerar_html(rows)
+    with open('index.html', 'w', encoding='utf-8') as f:
+        f.write(html)
+    print("index.html gerado com sucesso!")
