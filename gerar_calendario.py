@@ -13,7 +13,7 @@ def fetch_data():
     lines = text.strip().split('\n')
     if not lines:
         return []
-    headers = [h.strip().strip('"') for h in lines[0].split(',')]
+    headers = [h.strip().strip('"').strip('\r').strip() for h in lines[0].split(',')]
     rows = []
     for line in lines[1:]:
         vals = []
@@ -28,8 +28,14 @@ def fetch_data():
             else:
                 cur += c
         vals.append(cur.strip().strip('"'))
-        obj = {headers[i]: vals[i] if i < len(vals) else '' for i in range(len(headers))}
+        obj = {headers[i]: vals[i].strip().strip('\r') if i < len(vals) else '' for i in range(len(headers))}
         rows.append(obj)
+    # Debug: imprimir primeiras linhas
+    if rows:
+        print(f"Headers encontrados: {list(rows[0].keys())}")
+        print(f"Primeira linha Aba: repr={repr(rows[0].get('Aba',''))}")
+        abas = set(r.get('Aba','') for r in rows)
+        print(f"Valores únicos de Aba: {abas}")
     return rows
 
 def gerar_html(rows):
