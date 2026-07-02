@@ -190,7 +190,7 @@ let curMonth = Math.max(5, Math.min(TODAY.getMonth(), 11));
 let curYear = 2026;
 let curView = 'Assistente';
 let checks = {{}};
-const API_URL = 'https://script.google.com/macros/s/AKfycbwBDJlz7GdTtH38bmLfZSMuGLyDGVJwDubzBbubcaK6iWQ_GIXXtNPtLz_8V64G7fTx/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbxCWhSenN4FroaDPJimBKdA9Pu7liAP6g8iueQdqEY1YyDuJ7nUYKJ8FHYSyFt0T7t4/exec';
 
 const ALL_ROWS = {rows_json};
 
