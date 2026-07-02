@@ -184,12 +184,12 @@ const TODAY = new Date();
 const MF = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const ACTIVE = [5,6,7,8,9,10,11];
-const DRIVE_URL = '{DRIVE_URL}';
+const DRIVE_URL = '{SP_URL}';
 
 let curMonth = Math.max(5, Math.min(TODAY.getMonth(), 11));
 let curYear = 2026;
 let curView = 'Assistente';
-let checks = {};
+let checks = {{}};
 const API_URL = 'https://script.google.com/macros/s/AKfycbwBDJlz7GdTtH38bmLfZSMuGLyDGVJwDubzBbubcaK6iWQ_GIXXtNPtLz_8V64G7fTx/exec';
 
 const ALL_ROWS = {rows_json};
@@ -243,15 +243,12 @@ function isDone(k) {{ return !!checks[k]; }}
 function toggleCheck(k, demanda, dataStr) {{
   checks[k] = !checks[k];
   try {{ localStorage.setItem('gc', JSON.stringify(checks)); }} catch(e) {{}}
-  // Atualizar status na planilha para todos verem
-  const novoStatus = checks[k] ? 'Concluído' : 'Pendente';
+  const novoStatus = checks[k] ? 'Conclu\u00eddo' : 'Pendente';
   fetch(API_URL, {{
     method: 'POST',
+    mode: 'no-cors',
     body: JSON.stringify({{ demanda: demanda, data: dataStr, status: novoStatus }}),
     headers: {{'Content-Type': 'application/json'}}
-  }}).then(r => r.json()).then(d => {{
-    if (d.ok) console.log('Status atualizado na planilha:', novoStatus);
-    else console.warn('Erro ao atualizar:', d.msg);
   }}).catch(err => console.warn('Erro API:', err));
   renderCal();
   const parts = k.split('|');
