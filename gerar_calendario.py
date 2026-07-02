@@ -184,7 +184,7 @@ const TODAY = new Date();
 const MF = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const ACTIVE = [5,6,7,8,9,10,11];
-const DRIVE_URL = '{SP_URL}';
+const DRIVE_URL = 'https://drogariaglobocombr.sharepoint.com/Shared%20Documents/Forms/AllItems.aspx?id=%2FShared%20Documents%2FCompras&p=true&ga=1';
 
 let curMonth = Math.max(5, Math.min(TODAY.getMonth(), 11));
 let curYear = 2026;
