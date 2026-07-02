@@ -96,7 +96,7 @@ body{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;pa
   </div>
   <div class="g-right">
     <div class="g-today" id="today-label"></div>
-    <div class="g-update">🔄 Atualizado em: 02/07/2026 11:31</div>
+    <div class="g-update">🔄 Atualizado em: 02/07/2026 08:38</div>
   </div>
 </div>
 
@@ -108,7 +108,7 @@ body{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;pa
     <button class="vtab" onclick="switchView('Ressuprimento',this)">Ressuprimento</button>
   </div>
   <div class="tab-links">
-    <a class="tab-link green" href="https://drive.google.com/drive/folders/1UMUIohhYtIZK2IKmUCA9Odpkb3udtMag" target="_blank">📎 Anexar arquivo</a>
+    <a class="tab-link green" href="https://drogariaglobocombr.sharepoint.com/Shared%20Documents/Forms/AllItems.aspx?id=%2FShared%20Documents%2FCompras&p=true&ga=1" target="_blank">📎 Anexar arquivo</a>
     <a class="tab-link" href="https://docs.google.com/spreadsheets/d/1Nv_eYY6pT3PoGRyTABqznqJ48HXiSpaywAGNkXGX1jM/edit" target="_blank">📊 Editar planilha</a>
   </div>
 </div>
@@ -140,7 +140,7 @@ const TODAY = new Date();
 const MF = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 const ACTIVE = [5,6,7,8,9,10,11];
-const DRIVE_URL = 'https://drive.google.com/drive/folders/1UMUIohhYtIZK2IKmUCA9Odpkb3udtMag';
+const DRIVE_URL = 'https://drogariaglobocombr.sharepoint.com/Shared%20Documents/Forms/AllItems.aspx?id=%2FShared%20Documents%2FCompras&p=true&ga=1';
 
 let curMonth = Math.max(5, Math.min(TODAY.getMonth(), 11));
 let curYear = 2026;
