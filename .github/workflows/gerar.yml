@@ -2,7 +2,10 @@ name: Gerar Calendário
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    # Roda a cada 30 minutos das 06h às 22h (horário de Brasília = UTC-3)
+    # 06h BRT = 09h UTC | 22h BRT = 01h UTC (próximo dia)
+    - cron: '0,30 9-23 * * 1-5'   # Seg a Sex 06h-20h30 BRT
+    - cron: '0,30 0-1 * * 2-6'    # Seg a Sex 21h-22h30 BRT
   push:
     branches: [ main ]
   workflow_dispatch:
