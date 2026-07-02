@@ -134,7 +134,7 @@ body{{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;p
 <div class="month-strip" id="month-strip"></div>
 <div class="view-tabs">
   <div class="vtabs">
-    <button class="vtab active" onclick="switchView('Atividades',this)">Atividades</button>
+    <button class="vtab active" onclick="switchView('Assistente',this)">Assistente</button>
     <button class="vtab" onclick="switchView('Ressuprimento',this)">Ressuprimento</button>
   </div>
   <a class="sheets-link" href="https://docs.google.com/spreadsheets/d/1Nv_eYY6pT3PoGRyTABqznqJ48HXiSpaywAGNkXGX1jM/edit" target="_blank">📊 Editar planilha</a>
@@ -167,7 +167,7 @@ const MS=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez
 const ACTIVE=[5,6,7,8,9,10,11];
 let curMonth=Math.max(5,Math.min(TODAY.getMonth(),11));
 let curYear=2026;
-let curView='Atividades';
+let curView='Assistente';
 let checks={{}};
 
 const ALL_ROWS={rows_json};
@@ -250,7 +250,7 @@ function renderAlerts(){{
 }}
 
 function renderLegend(){{
-  const tipos=curView==='Atividades'
+  const tipos=curView==='Assistente'
     ?['Agenda Semanal','Pit Stop','Cluster','Encarte','Condição VAN','Campanha/PMK','Notas/Auditoria','Ressarcimento','Ofertas','Conta Corrente']
     :['Cobranças PBM/OL','Aceite PBM'];
   document.getElementById('legend').innerHTML=
@@ -310,7 +310,7 @@ function openModal(day,dayEvs,prep,y,m){{
     }});
     h+=`</div>`;
   }}
-  if(!dayEvs.length&&!prep.length)h=`<div style="text-align:center;padding:24px;color:var(--text2);font-size:14px">Nenhuma demanda neste dia.<br><br><small>Para adicionar, edite a planilha e aguarde a atualização automática.</small></div>`;
+  if(!dayEvs.length&&!prep.length)h=`<div style="text-align:center;padding:24px;color:var(--text2);font-size:14px">Nenhuma demanda neste dia.<br><br><small>Para adicionar, edite a planilha e aguarde a atualização automática.</small><br><br><a class="file-link" href="https://drive.google.com/drive/folders/1UMUIohhYtIZK2IKmUCA9Odpkb3udtMag" target="_blank">📎 Anexar arquivo nesta demanda</a></div>`;
   document.getElementById('mbody').innerHTML=h;
   document.getElementById('modal-ev').style.display='block';
 }}
