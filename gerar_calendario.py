@@ -189,7 +189,8 @@ const DRIVE_URL = '{DRIVE_URL}';
 let curMonth = Math.max(5, Math.min(TODAY.getMonth(), 11));
 let curYear = 2026;
 let curView = 'Assistente';
-let checks = {{}};
+let checks = {};
+const API_URL = 'https://script.google.com/macros/s/AKfycbwBDJlz7GdTtH38bmLfZSMuGLyDGVJwDubzBbubcaK6iWQ_GIXXtNPtLz_8V64G7fTx/exec';
 
 const ALL_ROWS = {rows_json};
 
@@ -239,9 +240,19 @@ function getPrep(evs, day) {{
 
 function ckKey(row, day, m, y) {{ return `${{row.Demanda}}|${{day}}|${{m}}|${{y}}`; }}
 function isDone(k) {{ return !!checks[k]; }}
-function toggleCheck(k) {{
+function toggleCheck(k, demanda, dataStr) {{
   checks[k] = !checks[k];
   try {{ localStorage.setItem('gc', JSON.stringify(checks)); }} catch(e) {{}}
+  // Atualizar status na planilha para todos verem
+  const novoStatus = checks[k] ? 'Concluído' : 'Pendente';
+  fetch(API_URL, {{
+    method: 'POST',
+    body: JSON.stringify({{ demanda: demanda, data: dataStr, status: novoStatus }}),
+    headers: {{'Content-Type': 'application/json'}}
+  }}).then(r => r.json()).then(d => {{
+    if (d.ok) console.log('Status atualizado na planilha:', novoStatus);
+    else console.warn('Erro ao atualizar:', d.msg);
+  }}).catch(err => console.warn('Erro API:', err));
   renderCal();
   const parts = k.split('|');
   const day = parseInt(parts[1]), m = parseInt(parts[2]), y = parseInt(parts[3]);
