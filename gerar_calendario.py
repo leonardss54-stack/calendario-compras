@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 
 CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTc9EptKql6OuNB1bygYLm9CMhufVgOLCmu9zbzrE8lJQr5_sIfw2UoJrZMDxZzv7vqj58tJM-E7UHO/pub?output=csv"
-DRIVE_URL = "https://drive.google.com/drive/folders/1UMUIohhYtIZK2IKmUCA9Odpkb3udtMag"
+DRIVE_URL = "https://drogariaglobocombr.sharepoint.com/Shared%20Documents/Forms/AllItems.aspx?id=%2FShared%20Documents%2FCompras&p=true&ga=1"
 SHEETS_URL = "https://docs.google.com/spreadsheets/d/1Nv_eYY6pT3PoGRyTABqznqJ48HXiSpaywAGNkXGX1jM/edit"
 
 def fetch_data():
@@ -38,7 +38,9 @@ def fetch_data():
 
 def gerar_html(rows):
     rows_json = json.dumps(rows, ensure_ascii=False)
-    agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+    from datetime import timezone, timedelta
+    brasilia = timezone(timedelta(hours=-3))
+    agora = datetime.now(brasilia).strftime("%d/%m/%Y %H:%M")
 
     html = f"""<!DOCTYPE html>
 <html lang="pt-BR">
