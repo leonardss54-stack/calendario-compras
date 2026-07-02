@@ -243,13 +243,10 @@ function isDone(k) {{ return !!checks[k]; }}
 function toggleCheck(k, demanda, dataStr) {{
   checks[k] = !checks[k];
   try {{ localStorage.setItem('gc', JSON.stringify(checks)); }} catch(e) {{}}
-  const novoStatus = checks[k] ? 'Conclu\u00eddo' : 'Pendente';
-  fetch(API_URL, {{
-    method: 'POST',
-    mode: 'no-cors',
-    body: JSON.stringify({{ demanda: demanda, data: dataStr, status: novoStatus }}),
-    headers: {{'Content-Type': 'application/json'}}
-  }}).catch(err => console.warn('Erro API:', err));
+  const novoStatus = checks[k] ? 'Concluído' : 'Pendente';
+  // Usar GET com params para evitar CORS
+  const url = API_URL + '?demanda=' + encodeURIComponent(demanda) + '&data=' + encodeURIComponent(dataStr) + '&status=' + encodeURIComponent(novoStatus);
+  fetch(url, {{ method: 'GET', mode: 'no-cors' }}).catch(err => console.warn('Erro API:', err));
   renderCal();
   const parts = k.split('|');
   const day = parseInt(parts[1]), m = parseInt(parts[2]), y = parseInt(parts[3]);

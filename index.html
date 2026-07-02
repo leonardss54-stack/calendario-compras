@@ -96,7 +96,7 @@ body{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;pa
   </div>
   <div class="g-right">
     <div class="g-today" id="today-label"></div>
-    <div class="g-update">🔄 Atualizado em: 02/07/2026 09:14</div>
+    <div class="g-update">🔄 Atualizado em: 02/07/2026 09:29</div>
   </div>
 </div>
 
@@ -200,12 +200,9 @@ function toggleCheck(k, demanda, dataStr) {
   checks[k] = !checks[k];
   try { localStorage.setItem('gc', JSON.stringify(checks)); } catch(e) {}
   const novoStatus = checks[k] ? 'Concluído' : 'Pendente';
-  fetch(API_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    body: JSON.stringify({ demanda: demanda, data: dataStr, status: novoStatus }),
-    headers: {'Content-Type': 'application/json'}
-  }).catch(err => console.warn('Erro API:', err));
+  // Usar GET com params para evitar CORS
+  const url = API_URL + '?demanda=' + encodeURIComponent(demanda) + '&data=' + encodeURIComponent(dataStr) + '&status=' + encodeURIComponent(novoStatus);
+  fetch(url, { method: 'GET', mode: 'no-cors' }).catch(err => console.warn('Erro API:', err));
   renderCal();
   const parts = k.split('|');
   const day = parseInt(parts[1]), m = parseInt(parts[2]), y = parseInt(parts[3]);
