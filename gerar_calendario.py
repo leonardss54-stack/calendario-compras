@@ -154,6 +154,7 @@ body{{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;p
   <div class="tab-links">
     <a class="tab-link green" href="{DRIVE_URL}" target="_blank">📎 Anexar arquivo</a>
     <a class="tab-link" href="{SHEETS_URL}" target="_blank">📊 Editar planilha</a>
+    <a class="tab-link" href="https://docs.google.com/spreadsheets/d/1Nv_eYY6pT3PoGRyTABqznqJ48HXiSpaywAGNkXGX1jM/edit#gid=819253083" target="_blank" style="background:#E8F5E9;color:#1B8A3E;border-color:#1B8A3E">✔ Atualizar Status</a>
   </div>
 </div>
 
