@@ -53,7 +53,7 @@ def gerar_html(rows):
 :root{{--red:#E8001C;--red-dark:#B5001A;--blue:#0057B8;--blue-dark:#003D82;--gray:#F5F5F5;--gray2:#E0E0E0;--text:#1A1A1A;--text2:#555;--green:#1B8A3E;--orange:#E65C00;}}
 body{{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;padding:16px}}
 .app{{max-width:980px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.12)}}
-.g-header{{background:var(--red);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}}
+.g-header{{background:var(--blue);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}}
 .g-logo{{display:flex;align-items:center;gap:10px}}
 .g-heart{{width:38px;height:38px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}}
 .g-heart svg{{width:20px;height:20px;fill:var(--red)}}
@@ -62,14 +62,14 @@ body{{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;p
 .g-right{{text-align:right}}
 .g-today{{color:rgba(255,255,255,.9);font-size:12px}}
 .g-update{{color:rgba(255,255,255,.7);font-size:11px;margin-top:2px}}
-.month-strip{{background:var(--red-dark);padding:8px 12px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:3px solid var(--red)}}
+.month-strip{{background:var(--blue-dark);padding:8px 12px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:3px solid var(--blue)}}
 .mtab{{padding:6px 13px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:rgba(255,255,255,.2);color:#fff;transition:all .15s}}
 .mtab:hover{{background:rgba(255,255,255,.35)}}
 .mtab.active{{background:var(--blue);color:#fff}}
 .view-tabs{{display:flex;gap:6px;padding:10px 14px;background:#f8f8f8;border-bottom:1px solid var(--gray2);align-items:center;justify-content:space-between;flex-wrap:wrap}}
 .vtabs{{display:flex;gap:6px}}
 .vtab{{padding:8px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray2);background:#fff;color:var(--text2);transition:all .15s}}
-.vtab.active{{background:var(--red);color:#fff;border-color:var(--red)}}
+.vtab.active{{background:var(--blue);color:#fff;border-color:var(--blue)}}
 .tab-links{{display:flex;gap:8px}}
 .tab-link{{font-size:12px;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:4px;padding:6px 11px;border-radius:8px;border:1px solid var(--blue);background:#EAF4FF;font-weight:600}}
 .tab-link:hover{{background:#D0E8FF}}
@@ -92,8 +92,8 @@ body{{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;p
 .al-resp{{font-size:11px;color:var(--text2);margin-top:2px}}
 .cal-wrap{{padding:12px 14px 0}}
 .cal-grid{{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;background:var(--gray2);border:2px solid var(--gray2);border-radius:10px;overflow:hidden}}
-.dow{{background:var(--red);padding:9px 3px;text-align:center;font-size:12px;font-weight:700;color:#fff;letter-spacing:.4px}}
-.dow.fim{{background:var(--red-dark)}}
+.dow{{background:var(--blue);padding:9px 3px;text-align:center;font-size:12px;font-weight:700;color:#fff;letter-spacing:.4px}}
+.dow.fim{{background:var(--blue-dark)}}
 .day{{background:#fff;min-height:95px;padding:6px;cursor:pointer;transition:background .1s}}
 .day:hover{{background:#FFF5F6}}
 .day.empty{{background:var(--gray);min-height:95px;cursor:default}}
@@ -111,7 +111,7 @@ body{{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;p
 .leg-dot{{width:11px;height:11px;border-radius:3px;flex-shrink:0}}
 .mov{{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;padding:16px}}
 .mbox{{background:#fff;border-radius:12px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto}}
-.mhead{{padding:14px 16px;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center;background:var(--red)}}
+.mhead{{padding:14px 16px;border-radius:12px 12px 0 0;display:flex;justify-content:space-between;align-items:center;background:var(--blue)}}
 .mhead h3{{color:#fff;font-size:15px;font-weight:700}}
 .mclose{{cursor:pointer;font-size:24px;color:rgba(255,255,255,.8);border:none;background:none;padding:0;line-height:1}}
 .mbody{{padding:14px}}
