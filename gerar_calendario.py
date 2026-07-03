@@ -244,10 +244,13 @@ function toggleCheck(k, demanda, dataStr) {{
   checks[k] = !checks[k];
   try {{ localStorage.setItem('gc', JSON.stringify(checks)); }} catch(e) {{}}
   const novoStatus = checks[k] ? 'Concluído' : 'Pendente';
-  // Usar Image para chamar API sem bloqueio de CORS
+  // Usar iframe invisivel para chamar API
   const url = API_URL + '?demanda=' + encodeURIComponent(demanda) + '&data=' + encodeURIComponent(dataStr) + '&status=' + encodeURIComponent(novoStatus);
-  const img = new Image();
-  img.src = url;
+  var iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  iframe.src = url;
+  document.body.appendChild(iframe);
+  setTimeout(function() {{ document.body.removeChild(iframe); }}, 5000);
   renderCal();
   const parts = k.split('|');
   const day = parseInt(parts[1]), m = parseInt(parts[2]), y = parseInt(parts[3]);
