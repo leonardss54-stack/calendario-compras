@@ -62,7 +62,7 @@ body{{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;p
 .g-right{{text-align:right}}
 .g-today{{color:rgba(255,255,255,.9);font-size:12px}}
 .g-update{{color:rgba(255,255,255,.7);font-size:11px;margin-top:2px}}
-.month-strip{{background:var(--red-dark);padding:8px 12px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:3px solid var(--blue)}}
+.month-strip{{background:var(--red-dark);padding:8px 12px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:3px solid var(--red)}}
 .mtab{{padding:6px 13px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:rgba(255,255,255,.2);color:#fff;transition:all .15s}}
 .mtab:hover{{background:rgba(255,255,255,.35)}}
 .mtab.active{{background:var(--blue);color:#fff}}
