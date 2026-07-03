@@ -154,7 +154,6 @@ body{{font-family:system-ui,sans-serif;background:var(--gray);min-height:100vh;p
   <div class="tab-links">
     <a class="tab-link green" href="{DRIVE_URL}" target="_blank">📎 Anexar arquivo</a>
     <a class="tab-link" href="{SHEETS_URL}" target="_blank">📊 Editar planilha</a>
-    <a class="tab-link" href="https://docs.google.com/spreadsheets/d/1Nv_eYY6pT3PoGRyTABqznqJ48HXiSpaywAGNkXGX1jM/edit#gid=819253083" target="_blank" style="background:#E8F5E9;color:#1B8A3E;border-color:#1B8A3E">✔ Atualizar Status</a>
   </div>
 </div>
 
@@ -365,7 +364,7 @@ function openModal(day, dayEvs, prep, y, m) {{
       ${{ev.Anexo?'<a class="file-link" href="'+ev.Anexo+'" target="_blank">📎 Ver anexo</a>':''}}
       ${{parseInt(ev.Alerta||0)>0?'<div class="anote">🔔 Alerta '+ev.Alerta+' dia(s) antes</div>':''}}
       <a class="btn-attach" href="${{DRIVE_URL}}" target="_blank">📎 Anexar arquivo nesta demanda</a>
-      <button class="btn-check ${{dk?'done':'undone'}}" onclick="toggleCheck('${{k}}')">${{dk?'↩ Desmarcar':'✔ Marcar como concluído'}}</button>
+      <a href=\"https://docs.google.com/spreadsheets/d/1Nv_eYY6pT3PoGRyTABqznqJ48HXiSpaywAGNkXGX1jM/edit#gid=819253083\" target=\"_blank\" class=\"btn-check undone\" style=\"display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none\">✔ Marcar como concluído na planilha</a>'
     </div>`;
   }});
   if (prep.length > 0) {{
