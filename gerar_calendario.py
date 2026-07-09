@@ -239,7 +239,20 @@ function getPrep(evs, day) {{
 }}
 
 function ckKey(row, day, m, y) {{ return `${{row.Demanda}}|${{day}}|${{m}}|${{y}}`; }}
-function isDone(k) {{ return !!checks[k]; }}
+function isDone(k) {{
+  if (checks[k]) return true;
+  // Verificar também o Status na planilha
+  const parts = k.split('|');
+  const demanda = parts[0];
+  const day = parseInt(parts[1]);
+  const m = parseInt(parts[2]);
+  const y = parseInt(parts[3]);
+  const row = ALL_ROWS.find(r => {{
+    const dt = new Date(r.Data + 'T12:00:00');
+    return r.Demanda === demanda && dt.getDate() === day && dt.getMonth() === m && dt.getFullYear() === y;
+  }});
+  return row && row.Status === 'Concluído';
+}}
 function toggleCheck(k, demanda, dataStr) {{
   checks[k] = !checks[k];
   try {{ localStorage.setItem('gc', JSON.stringify(checks)); }} catch(e) {{}}
